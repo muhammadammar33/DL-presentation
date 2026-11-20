@@ -1,0 +1,17 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+step 20/312 loss 2.160 26s
+step 40/312 loss 0.905 47s
+step 60/312 loss 0.505 68s
+step 80/312 loss 0.213 89s
+step 100/312 loss 0.301 110s
+step 120/312 loss 0.165 131s
+step 140/312 loss 0.229 152s
+step 160/312 loss 0.174 172s
+step 180/312 loss 0.231 192s
+step 200/312 loss 0.211 212s
+step 220/312 loss 0.126 232s
+step 240/312 loss 0.096 252s
+step 260/312 loss 0.197 271s
+step 280/312 loss 0.126 290s
+step 300/312 loss 0.553 308s
+test acc 0.9455

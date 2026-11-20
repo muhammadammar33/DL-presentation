@@ -1,0 +1,16 @@
+# dataset (re-create with: python prepare_data.py)
+cifar_train.npz
+cifar_test.npz
+data/
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+# Node (only for rebuilding the deck)
+node_modules/
+package-lock.json
+# rendered previews
+render/
+*.pdf
