@@ -1,8 +1,8 @@
 """Download CIFAR-10 and save it as cifar_train.npz / cifar_test.npz, the format train.py,
 finetune.py and analysis.py read.
 
-    python prepare_data.py               # via torchvision (official source, ~170 MB download)
-    python prepare_data.py --source hf   # via the Hugging Face mirror (needs: pip install pyarrow)
+    python prepare_data.py                        # Hugging Face mirror (fast; needs pyarrow), ~145 MB
+    python prepare_data.py --source torchvision   # official University of Toronto server (often very slow)
 
 Each .npz holds X: uint8 array (N, 32, 32, 3) and y: int64 labels (N,).
 """
@@ -41,7 +41,7 @@ def from_hf():
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
-    p.add_argument('--source', choices=['torchvision', 'hf'], default='torchvision')
+    p.add_argument('--source', choices=['hf', 'torchvision'], default='hf')
     a = p.parse_args()
     data = from_torchvision() if a.source == 'torchvision' else from_hf()
     for split, (X, y) in data.items():

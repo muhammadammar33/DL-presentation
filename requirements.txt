@@ -7,4 +7,4 @@ matplotlib
 pillow
 jupyter
 nbformat
-pyarrow        # only needed for: python prepare_data.py --source hf
+pyarrow        # used by prepare_data.py to read the dataset

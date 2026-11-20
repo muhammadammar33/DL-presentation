@@ -118,8 +118,8 @@ python -c "import torch, timm; print('torch', torch.__version__, '| GPU:', torch
 python prepare_data.py
 ```
 
-This writes `cifar_train.npz` (50,000 images) and `cifar_test.npz` (10,000 images).
-If the official download is slow, use the Hugging Face mirror instead: `python prepare_data.py --source hf`.
+This downloads CIFAR-10 from the Hugging Face mirror and writes `cifar_train.npz` (50,000 images) and `cifar_test.npz` (10,000 images).
+The official University of Toronto server (`python prepare_data.py --source torchvision`) is often extremely slow, so it is not the default.
 
 ### Step 5: check the model code (a few seconds)
 
@@ -213,7 +213,8 @@ python make_notebook.py
 | `python` not found (Windows) | Reinstall Python with **Add Python to PATH** ticked, or use `py` instead of `python` |
 | `No module named torch` | The virtual environment is not active: run the activate command from step 2 again |
 | `FileNotFoundError: cifar_train.npz` | Run `python prepare_data.py` in the repo folder |
-| CIFAR download very slow or failing | `python prepare_data.py --source hf` |
+| `No module named pyarrow` | `pip install pyarrow`, then run `python prepare_data.py` again |
+| `RuntimeError: File not found or corrupted` | The slow official server timed out: use `python prepare_data.py` (Hugging Face mirror is the default), and delete `data/cifar-10-python.tar.gz` |
 | Training is very slow | Normal on CPU: use fewer `--epochs`, or use Colab with a GPU |
 | Out of memory | Close other programs; `train.py` keeps the whole dataset in memory (about 0.7 GB) |
 | Jupyter can't find the packages | Select the `.venv` interpreter as the notebook kernel (VS Code: top-right kernel picker) |
