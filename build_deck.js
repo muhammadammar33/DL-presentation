@@ -136,17 +136,17 @@ pres.addSection({ title: 'Opening' }); section = 'Opening';
   s.addText('Vision Transformers: An Image is a Sequence of Patches', { placeholder: 'title' });
   s.addText([
     { text: 'Building a ViT from scratch in PyTorch and training it on CIFAR-10', options: { breakLine: true } },
-    { text: 'Implementation track · Group __ · Member 1 · Member 2 · Member 3 · Member 4', options: { color: ORANGE, fontSize: 16 } },
+    { text: 'Implementation Explanation · Ammar · Dilawar · Khizar · Farhan', options: { color: ORANGE, fontSize: 16 } },
   ], { placeholder: 'body' });
-  s.addNotes(`[Member 1] Assalam o alaikum. Our group took the implementation track for vision transformers. We did not just call a library: we wrote every part of a Vision Transformer ourselves, trained it on CIFAR-10, compared it with a CNN, ran ablations and looked inside the trained model. The strip at the top is a real CIFAR-10 image (a ${S.patch_img_class}) cut into 4x4-pixel patches. That is literally what our model sees: a sequence of patches, the same way a language model sees a sequence of words.`);
+  s.addNotes(`[Ammar] Assalam o alaikum. Our group took the implementation track for vision transformers. We did not just call a library: we wrote every part of a Vision Transformer ourselves, trained it on CIFAR-10, compared it with a CNN, ran ablations and looked inside the trained model. The strip at the top is a real CIFAR-10 image (a ${S.patch_img_class}) cut into 4x4-pixel patches. That is literally what our model sees: a sequence of patches, the same way a language model sees a sequence of words.`);
 }
 {
   const s = content('Roadmap: four parts, four presenters', 'Quick roadmap. Each member presents one part, about 7 minutes each, with questions at the end.');
   const parts = [
-    ['1', 'Architecture', 'Patches → tokens → attention → encoder. Every equation and tensor shape.', 'Member 1'],
-    ['2', 'Implementation', 'Our from-scratch PyTorch code, how we verified it, and the training recipe.', 'Member 2'],
-    ['3', 'Experiments', 'ViT vs CNN, ablations, data hunger, pre-training.', 'Member 3'],
-    ['4', 'Inside the model', 'Attention maps, attention distance, learned positions, failures, what came after ViT.', 'Member 4'],
+    ['1', 'Architecture', 'Patches → tokens → attention → encoder. Every equation and tensor shape.', 'Ammar'],
+    ['2', 'Implementation', 'Our from-scratch PyTorch code, how we verified it, and the training recipe.', 'Dilawar'],
+    ['3', 'Experiments', 'ViT vs CNN, ablations, data hunger, pre-training.', 'Khizar'],
+    ['4', 'Inside the model', 'Attention maps, attention distance, learned positions, failures, what came after ViT.', 'Farhan'],
   ];
   parts.forEach((p, i) => {
     const x = 0.6 + i * 3.08;
@@ -161,8 +161,8 @@ pres.addSection({ title: 'Opening' }); section = 'Opening';
 // ======================================================================
 // PART 1: ARCHITECTURE
 // ======================================================================
-sectionSlide(1, 'Part 1: The Architecture', 'From pixels to tokens to attention', 'Member 1',
-  '[Member 1] I will explain the architecture exactly as we implemented it, with real tensor shapes from our model.');
+sectionSlide(1, 'Part 1: The Architecture', 'From pixels to tokens to attention', 'Ammar',
+  '[Ammar] I will explain the architecture exactly as we implemented it, with real tensor shapes from our model.');
 {
   const s = content('Why put a transformer on images at all?',
     `A CNN builds in two strong assumptions (inductive biases). Locality: a 3x3 kernel only looks at neighbours. Translation equivariance: the same kernel slides everywhere. These priors are why CNNs learn well from small data. But a pixel at layer L can only see a window that grows by about 2 pixels per layer, so long-range interactions arrive late.
@@ -344,7 +344,8 @@ Parameters per block: attention 66,048 + MLP 65,920 + 2 LayerNorms 512 = 132,480
 }
 {
   const s = content('The full model, and where its parameters live',
-    `Putting it together: patch embedding, then add CLS and positions, then 6 encoder blocks, then a final LayerNorm, then read the CLS token, then a linear classifier over 10 classes.
+    `[LIVE DEMO, Ammar: in the terminal run  python demo.py shapes  and read the shapes aloud, then  python demo.py params  to show the table below computed live.]
+Putting it together: patch embedding, then add CLS and positions, then 6 encoder blocks, then a final LayerNorm, then read the CLS token, then a linear classifier over 10 classes.
 The parameter table was computed by hand with the formulas you have just seen, and it matches PyTorch's count exactly: 811,146. Almost everything is in the encoder blocks. The image-specific parts (patch projection and positions) are under 2% of the model.
 For scale: the paper's ViT-Base has D=768, 12 layers and 12 heads, which is 86 million parameters, about 100 times bigger. Our model is deliberately small enough to train on a CPU or a free Colab GPU.
 Compute per image: about 2 x 65 x 8D^2 = 17 MFLOPs for the linear layers per block, plus 4 x 65^2 x 128 = 2.2 MFLOPs for the attention matrices. At T=65, the quadratic attention part is only about 11% of the work. It dominates only at long sequence lengths.`);
@@ -377,11 +378,12 @@ Compute per image: about 2 x 65 x 8D^2 = 17 MFLOPs for the linear layers per blo
 // ======================================================================
 // PART 2: IMPLEMENTATION
 // ======================================================================
-sectionSlide(2, 'Part 2: Implementation', 'Writing it from scratch, verifying it, training it', 'Member 2',
-  '[Member 2] Now how we built it. Our rule was no nn.MultiheadAttention and no timm for our model. Every operation is written out, so we can explain and inspect every number.');
+sectionSlide(2, 'Part 2: Implementation', 'Writing it from scratch, verifying it, training it', 'Dilawar',
+  '[Dilawar] Now how we built it. Our rule was no nn.MultiheadAttention and no timm for our model. Every operation is written out, so we can explain and inspect every number.');
 {
   const s = content('Our code: about 120 lines of plain PyTorch',
-    `This is the top-level forward pass of our ViT, and it reads like the paper. Patch-embed, prepend CLS, add positions, run the blocks, apply a final LayerNorm, take token 0 and classify.
+    `[LIVE DEMO, Dilawar: switch to VS Code, open vit.py, show MultiHeadSelfAttention.forward (the qkv reshape/permute, scores, softmax, attn @ v), then EncoderBlock.forward (two lines = two equations).]
+This is the top-level forward pass of our ViT, and it reads like the paper. Patch-embed, prepend CLS, add positions, run the blocks, apply a final LayerNorm, take token 0 and classify.
 The modules are: PatchEmbedding (Conv2d k=s=P), MultiHeadSelfAttention (a fused qkv linear, a scaled softmax and an output projection; it optionally stores the attention matrix so we can visualise it later), MLP (Linear-GELU-Linear), DropPath, EncoderBlock (Pre-LN with residuals) and ViT.
 Initialisation follows the reference implementation: truncated normal with std 0.02 for linear layers, positions and CLS, zeros for biases, and ones for LayerNorm scales. A bad init noticeably slows ViT training.
 We also wrote a ResNet-style CNN baseline of similar size (0.69M parameters) in the same file, so the comparison is fair: the same data pipeline, augmentation, optimiser family and epochs.
@@ -417,7 +419,8 @@ Everything is in vit.py and in the Colab notebook we are sharing.`);
 }
 {
   const s = content('How we know the implementation is correct',
-    `Writing a transformer from scratch makes it easy to introduce silent bugs, such as transposing the wrong axes in the head reshape. Training still "works" but gets worse accuracy. So we tested three things before training.
+    `[LIVE DEMO, Dilawar: run  python demo.py check  in the terminal: it prints the difference vs PyTorch (~1e-7) and the initial loss (~2.31).]
+Writing a transformer from scratch makes it easy to introduce silent bugs, such as transposing the wrong axes in the head reshape. Training still "works" but gets worse accuracy. So we tested three things before training.
 1) Attention correctness: we fed the same Q, K and V into PyTorch's fused scaled_dot_product_attention and into our version. The maximum absolute difference was 6.7e-8, which is floating-point round-off. So our reshape, permute, scaling and softmax are right.
 2) Parameter count: our hand formula 4D^2+4D + 2rD^2+(r+1)D + 4D per block, plus the embedding and head, gives 811,146, which is exactly what PyTorch reports.
 3) Shapes: we traced one image through the network and checked every intermediate shape against the paper's equations.
@@ -493,12 +496,13 @@ Honest limitations: these are single runs with one seed on CPU, so differences u
 // ======================================================================
 // PART 3: RESULTS
 // ======================================================================
-sectionSlide(3, 'Part 3: Experiments', 'ViT vs CNN, ablations, data hunger, pre-training', 'Member 3',
-  '[Member 3] Now the results. Every number on these slides comes from our own runs.');
+sectionSlide(3, 'Part 3: Experiments', 'ViT vs CNN, ablations, data hunger, pre-training', 'Khizar',
+  '[Khizar] Now the results. Every number on these slides comes from our own runs.');
 {
   const vAcc = vm.final_test_acc, cAcc = cm.final_test_acc;
   const s = content('Head-to-head: ViT vs CNN at equal budget',
-    `After 25 epochs on the full CIFAR-10 training set, our from-scratch ViT reaches ${pct(vAcc)} test accuracy. The ResNet-style CNN, with slightly fewer parameters, reaches ${pct(cAcc)}.
+    `[LIVE DEMO, Khizar: run  python demo.py predict  : the trained model classifies 8 random test images, then scores all 10,000 in about 10 seconds and prints 79.02%, the same number as on this slide.]
+After 25 epochs on the full CIFAR-10 training set, our from-scratch ViT reaches ${pct(vAcc)} test accuracy. The ResNet-style CNN, with slightly fewer parameters, reaches ${pct(cAcc)}.
 That gap is the inductive-bias story in one number. The CNN gets locality and translation equivariance for free. The ViT has to learn them from 50,000 small images. This is exactly the paper's finding at small scale: on mid-sized datasets without pre-training, ViTs trail CNNs of similar size.
 Note the training accuracy too. The ViT reaches ${pct(vm.history.at(-1).train_acc)} train accuracy (with augmentation and label smoothing) against a test accuracy of ${pct(vAcc)}. The CNN reaches ${pct(cm.history.at(-1).train_acc)} against ${pct(cAcc)}.
 Training cost on our CPU: about ${Math.round(vm.history.at(-1).time_s / 60)} minutes for the ViT and ${Math.round(cm.history.at(-1).time_s / 60)} minutes for the CNN. On CPU, the ViT is actually cheaper per epoch, because its large matrix multiplies are very efficient compared with many small convolutions.`);
@@ -598,11 +602,12 @@ This is how ViTs are used in practice: almost nobody trains one from scratch on 
 // ======================================================================
 // PART 4: INSIDE THE MODEL
 // ======================================================================
-sectionSlide(4, 'Part 4: Inside the Model', 'What did our ViT actually learn?', 'Member 4',
-  '[Member 4] Accuracy tells us how well the model works. Now we open it up and look at what it learned.');
+sectionSlide(4, 'Part 4: Inside the Model', 'What did our ViT actually learn?', 'Farhan',
+  '[Farhan] Accuracy tells us how well the model works. Now we open it up and look at what it learned.');
 {
   const s = content('Where does the CLS token look? Attention rollout',
-    `Note for the audience: CIFAR-10 images are only 32x32 pixels, so we show them enlarged pixel-for-pixel. The blocky look is the real resolution, and each 4x4 block of pixels in the heat-map row is one token.
+    `[CODE, Farhan: switch to VS Code, open analysis.py and show the rollout() function: average heads, add identity for the residual, renormalise, multiply through the layers, take the CLS row. Optionally run  python analysis.py  beforehand and open figs/rollout.png.]
+Note for the audience: CIFAR-10 images are only 32x32 pixels, so we show them enlarged pixel-for-pixel. The blocky look is the real resolution, and each 4x4 block of pixels in the heat-map row is one token.
 Top row: correctly classified test images. Bottom row: attention rollout from our trained ViT, brighter meaning more influence on the CLS token.
 How rollout works (Abnar and Zuidema, 2020): looking at only the last layer is misleading, because information has already been mixed by earlier layers. Rollout multiplies the attention matrices of all 6 layers. At each layer we average the heads and add the identity matrix, to account for the residual connection that carries each token's own information forward: R = product over layers of 0.5*(A + I), row-normalised. Row 0 of R shows how much each patch contributes to the CLS token.
 What we see: for many images the attention concentrates on the object. The deer's body, the cat, the truck's cab and the horse and rider stand out, while plain background such as the sky behind the airplane is mostly ignored. Nobody gave the model bounding boxes or segmentation masks; it learned where to look from class labels alone.
@@ -755,7 +760,7 @@ Q: Does the model really need positions? A: It needs them for spatial reasoning.
   s.addImage({ path: 'figs/patch_seq.png', x: 0.8, y: 0.9, w: 8.4, h: 0.62 });
   s.addText('Thank you: questions?', { placeholder: 'title' });
   s.addText([{ text: 'Code and notebook: ViT_from_scratch_CIFAR10.ipynb (runs on a free Colab T4)', options: { breakLine: true } },
-    { text: 'Group __ · Member 1 · Member 2 · Member 3 · Member 4', options: { color: ORANGE, fontSize: 16 } }], { placeholder: 'body' });
+    { text: 'Ammar · Dilawar · Khizar · Farhan', options: { color: ORANGE, fontSize: 16 } }], { placeholder: 'body' });
   s.addNotes('Thank you. We are happy to take questions. The notebook reproduces every number in this talk.');
 }
 

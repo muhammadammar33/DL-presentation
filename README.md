@@ -1,6 +1,7 @@
 # Vision Transformers from Scratch on CIFAR-10
 
-Deep Learning class presentation (implementation track, transformers for vision).
+Deep Learning class presentation: **Implementation Explanation, Vision Transformers**.
+Group: Ammar, Dilawar, Khizar, Farhan.
 We built a Vision Transformer (ViT) by hand in PyTorch, trained it on CIFAR-10, compared it with a CNN,
 ran ablations, fine-tuned a pretrained ViT, and visualised what the model learned.
 
@@ -26,6 +27,7 @@ because it must learn the structure a CNN has built in, and pre-training fixes t
 | `train.py` | Trains one model from scratch (used for every run in the slides) |
 | `finetune.py` | Fine-tunes a pretrained ViT-Tiny/16 from `timm` |
 | `analysis.py` | Makes all figures in `figs/` from the trained model |
+| `demo.py` | Live demo for the presentation: shapes, parameter count, attention check, live predictions |
 | `prepare_data.py` | Downloads CIFAR-10 and writes `cifar_train.npz` / `cifar_test.npz` |
 | `results/` | Each run's numbers (`*.json`) and trained weights (`*.pt`) |
 | `figs/` | The figures used in the slides |
@@ -132,6 +134,15 @@ Expected: `params 811146` and a max difference around `1e-7`.
 ---
 
 ## Using everything locally
+
+### Live demo used in the presentation (about 20 seconds)
+
+```bash
+python demo.py all
+```
+
+Or one part at a time: `python demo.py shapes`, `params`, `check` or `predict`.
+`predict` loads the trained ViT, classifies 8 random test images and scores the full test set (79.02%).
 
 ### A. Regenerate the figures from the trained model (about 1 minute)
 
