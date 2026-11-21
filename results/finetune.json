@@ -1,1 +1,1 @@
-{"test_acc": 0.9455, "train_images": 10000, "test_images": 2000, "epochs": 1, "lr": 5e-05, "params": 5526346, "time_s": 340.1363067626953}
+{"test_acc": 0.9455, "train_images": 10000, "test_images": 2000, "epochs": 1, "lr": 5e-05, "params": 5526346, "time_s": 307.7819314002991}

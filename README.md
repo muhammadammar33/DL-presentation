@@ -28,8 +28,10 @@ because it must learn the structure a CNN has built in, and pre-training fixes t
 | `finetune.py` | Fine-tunes a pretrained ViT-Tiny/16 from `timm` |
 | `analysis.py` | Makes all figures in `figs/` from the trained model |
 | `demo.py` | Live demo for the presentation: shapes, parameter count, attention check, live predictions |
+| `predict.py` | Classify **your own photo** with both models; shows the guesses, the 32x32 view and where the model looked |
+| `examples/` | 10 example photos (one per class) from Wikimedia Commons; credits in `examples/CREDITS.md` |
 | `prepare_data.py` | Downloads CIFAR-10 and writes `cifar_train.npz` / `cifar_test.npz` |
-| `results/` | Each run's numbers (`*.json`) and trained weights (`*.pt`) |
+| `results/` | Each run's numbers (`*.json`) and trained weights (`*.pt`), including the fine-tuned ViT-Tiny (`finetuned_vit_tiny.pt`) |
 | `figs/` | The figures used in the slides |
 | `log_a.txt`, `log_b.txt`, `log_ft.txt` | Console logs of the real training runs |
 | `run_a.sh`, `run_b.sh` | The exact commands used for all training runs |
@@ -143,6 +145,17 @@ python demo.py all
 
 Or one part at a time: `python demo.py shapes`, `params`, `check` or `predict`.
 `predict` loads the trained ViT, classifies 8 random test images and scores the full test set (79.02%).
+
+### Classify your own photo (live demo, a few seconds)
+
+```bash
+python predict.py examples/cat.jpg
+```
+
+Use any photo (`python predict.py C:\Users\you\Pictures\my_cat.jpg`) or several at once (`python predict.py examples/*.jpg`).
+It prints each model's top-3 guesses and opens a figure (also saved as `predictions.png`).
+The models only know the 10 CIFAR-10 classes, so a photo of anything else is forced into one of them.
+On the 10 example photos, our from-scratch ViT gets 7 right and the pretrained ViT gets all 10.
 
 ### A. Regenerate the figures from the trained model (about 1 minute)
 

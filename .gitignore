@@ -14,3 +14,4 @@ package-lock.json
 # rendered previews
 render/
 *.pdf
+predictions.png

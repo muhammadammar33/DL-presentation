@@ -8,6 +8,7 @@ p.add_argument('--epochs', type=int, default=1)
 p.add_argument('--bs', type=int, default=32)
 p.add_argument('--lr', type=float, default=5e-5)
 p.add_argument('--threads', type=int, default=4)
+p.add_argument('--save', default='results/finetuned_vit_tiny.pt', help='where to save the fine-tuned weights')
 a = p.parse_args()
 torch.manual_seed(0); torch.set_num_threads(a.threads)
 
@@ -42,5 +43,7 @@ for ep in range(a.epochs):
             print(f'step {step}/{steps} loss {loss.item():.3f} {time.time() - t0:.0f}s', flush=True)
 acc = evaluate()
 print('test acc', acc)
+torch.save(m.state_dict(), a.save)
+print('saved fine-tuned weights to', a.save)
 json.dump({'test_acc': acc, 'train_images': a.train_n, 'test_images': a.test_n, 'epochs': a.epochs, 'lr': a.lr,
            'params': sum(q.numel() for q in m.parameters()), 'time_s': time.time() - t0}, open('results/finetune.json', 'w'))
