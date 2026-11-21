@@ -38,6 +38,7 @@ because it must learn the structure a CNN has built in, and pre-training fixes t
 | `make_notebook.py` | Regenerates the notebook from `vit.py` |
 | `smoke_test_notebook.py` | Runs every notebook cell quickly on CPU, to check nothing is broken |
 | `build_deck.js` | Regenerates the PowerPoint from `results/` and `figs/` (optional) |
+| `add_animations.py` | Adds the slide transitions and click-by-click animations to the PowerPoint |
 
 The CIFAR-10 data is **not** in the repo: GitHub refuses files over 100 MB. `prepare_data.py` recreates it in one command.
 
@@ -45,8 +46,8 @@ The CIFAR-10 data is **not** in the repo: GitHub refuses files over 100 MB. `pre
 
 ## Just want to look at everything? (no setup)
 
-1. **Slides:** download `ViT_Presentation.pptx` and open it in PowerPoint, Keynote or Google Slides.
-   Speaker notes: in PowerPoint, choose **View → Notes**.
+1. **Slides:** download `ViT_Presentation.pptx` and open it in PowerPoint (Keynote and Google Slides open it too, but may drop some animations).
+   Speaker notes: in PowerPoint, choose **View → Notes**. Each slide reveals its content click by click; the notes start with how many clicks it has.
 2. **Notebook:** click `ViT_from_scratch_CIFAR10.ipynb` on GitHub to read it. To run it on a free GPU,
    open [Google Colab](https://colab.research.google.com), choose **File → Open notebook → GitHub**, paste this repo's URL,
    then **Runtime → Change runtime type → T4 GPU** and **Runtime → Run all**. It takes about 45 to 60 minutes.
@@ -217,7 +218,10 @@ The finished deck is already in the repo. To regenerate it after changing result
 ```bash
 npm install pptxgenjs
 node build_deck.js
+python add_animations.py ViT_Presentation.pptx
 ```
+
+`add_animations.py` adds the transitions and the click-by-click reveals (84 clicks across the deck; each slide's speaker notes start with its click count).
 
 Without the separate theme helper this repo does not include, the rebuilt deck uses PowerPoint's
 default colours instead of the custom theme. To change only the text, edit `ViT_Presentation.pptx` directly in PowerPoint.
