@@ -97,6 +97,17 @@ pres.defineSlideMaster({
 });
 
 // ---------------- helpers ----------------
+// the group, with student IDs, in presenting order (title and closing slides)
+const GROUP = [['Muhammad Ammar Cheema', '2604920'], ['Dilawar Shah', '2604915'], ['Syed Khizar Hussain Kazmi', '2604927'], ['Muhammad Farhan Khan', '2604916']];
+function groupNames(s) {
+  GROUP.forEach((g, i) => {
+    const x = 0.8 + i * 2.95;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y: 5.75, w: 2.8, h: 0.95, rectRadius: 0.08, fill: { color: '1E2A3E' }, line: { type: 'none' } });
+    s.addText([{ text: g[0], options: { bold: true, color: 'FFFFFF', fontSize: 13, breakLine: true } }, { text: g[1], options: { color: 'AEB7C6', fontSize: 12 } }],
+      { x: x + 0.15, y: 5.8, w: 2.55, h: 0.85, valign: 'middle', isTextBox: true, margin: 0 });
+  });
+}
+
 let section = '';
 function content(title, notes) {
   const s = pres.addSlide({ masterName: 'CONTENT', sectionTitle: section });
@@ -129,6 +140,12 @@ function sectionSlide(num, title, sub, presenter, notes) {
   s.addText([{ text: sub, options: { breakLine: true } }, { text: presenter, options: { color: ORANGE, bold: true } }], { placeholder: 'body' });
   if (notes) s.addNotes(notes);
   return s;
+}
+// A straight connector from (x1, y1) to (x2, y2). PowerPoint needs a positive width and height,
+// with flipH / flipV for lines that run left or up; a negative height draws the wrong line.
+function connect(s, x1, y1, x2, y2, line) {
+  s.addShape(pres.shapes.LINE, { x: Math.min(x1, x2), y: Math.min(y1, y2), w: Math.abs(x2 - x1), h: Math.abs(y2 - y1),
+    flipH: x2 < x1, flipV: y2 < y1, line });
 }
 function card(s, x, y, w, h, head, body, opts = {}) {
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.1, fill: { color: opts.fill || C.background2 }, line: { type: 'none' }, objectName: 'card' });
@@ -179,17 +196,18 @@ pres.addSection({ title: 'Opening' }); section = 'Opening';
   s.addText('Vision Transformers: An Image is a Sequence of Patches', { placeholder: 'title' });
   s.addText([
     { text: 'Building a ViT from scratch in PyTorch and training it on CIFAR-10', options: { breakLine: true } },
-    { text: 'Implementation Explanation · Ammar · Dilawar · Khizar · Farhan', options: { color: ORANGE, fontSize: 16 } },
+    { text: 'Implementation Explanation · Deep Learning', options: { color: ORANGE, fontSize: 16 } },
   ], { placeholder: 'body' });
+  groupNames(s);
   s.addNotes(`[Ammar] Assalam o alaikum. Our group took the implementation track for vision transformers. We did not just call a library: we wrote every part of a Vision Transformer ourselves, trained it on CIFAR-10, compared it with a CNN, ran ablations and looked inside the trained model. The strip at the top is a real CIFAR-10 image (a ${S.patch_img_class}) cut into 4x4-pixel patches. That is literally what our model sees: a sequence of patches, the same way a language model sees a sequence of words.`);
 }
 {
   const s = content('Roadmap: four parts, four presenters', 'Quick roadmap. Each member presents one part, about 7 minutes each, with questions at the end.');
   const parts = [
-    ['1', 'Architecture', 'Patches → tokens → attention → encoder. Every equation and tensor shape.', 'Ammar'],
-    ['2', 'Implementation', 'Our from-scratch PyTorch code, how we verified it, and the training recipe.', 'Dilawar'],
-    ['3', 'Experiments', 'ViT vs CNN, ablations, data hunger, pre-training.', 'Khizar'],
-    ['4', 'Inside the model', 'Attention maps, attention distance, learned positions, failures, what came after ViT.', 'Farhan'],
+    ['1', 'Architecture', 'Patches → tokens → attention → encoder. Every equation and tensor shape.', 'Muhammad Ammar Cheema'],
+    ['2', 'Implementation', 'Our from-scratch PyTorch code, how we verified it, and the training recipe.', 'Dilawar Shah'],
+    ['3', 'Experiments', 'ViT vs CNN, ablations, data hunger, pre-training.', 'Syed Khizar Hussain Kazmi'],
+    ['4', 'Inside the model', 'Attention maps, attention distance, learned positions, failures, what came after ViT.', 'Muhammad Farhan Khan'],
   ];
   parts.forEach((p, i) => {
     step(i + 1);
@@ -198,14 +216,14 @@ pres.addSection({ title: 'Opening' }); section = 'Opening';
     tile(s, x + 0.25, 1.95, 0.7, i === 0 ? ORANGE : i === 1 ? BLUE : i === 2 ? PURPLE : C.text2, p[0]);
     txt(s, x + 0.25, 2.9, 2.4, 0.5, p[1], { fontSize: 20, bold: true, fontFace: 'Cambria' });
     txt(s, x + 0.25, 3.45, 2.4, 2.2, p[2], { fontSize: 17 });
-    txt(s, x + 0.25, 5.7, 2.4, 0.4, p[3], { fontSize: 13, color: MUTED, bold: true });
+    txt(s, x + 0.25, 5.55, 2.45, 0.6, p[3], { fontSize: 13, color: MUTED, bold: true, valign: 'bottom' });
   });
 }
 
 // ======================================================================
 // PART 1: ARCHITECTURE
 // ======================================================================
-sectionSlide(1, 'Part 1: The Architecture', 'From pixels to tokens to attention', 'Ammar',
+sectionSlide(1, 'Part 1: The Architecture', 'From pixels to tokens to attention', 'Muhammad Ammar Cheema',
   '[Ammar] I will explain the architecture exactly as we implemented it, with real tensor shapes from our model.');
 {
   const s = content('Why put a transformer on images at all?',
@@ -362,10 +380,10 @@ In Part 4 we will see that different heads really do specialise: some local, som
   txt(s, 0.6, y + 0.9, 1.7, 1.2, 'X\n65 × 128', { color: C.background1, bold: true, align: 'center', valign: 'middle', fontSize: 15 });
   for (let i = 0; i < 4; i++) {
     const hy = y + i * 0.75;
-    s.addShape(pres.shapes.LINE, { x: 2.3, y: y + 1.5, w: 0.8, h: hy + 0.3 - (y + 1.5), line: { color: 'C9CED8', width: 1.5 } });
+    connect(s, 2.3, y + 1.5, 3.1, hy + 0.3, { color: 'C9CED8', width: 1.5 });
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 3.1, y: hy, w: 2.9, h: 0.6, rectRadius: 0.08, fill: { color: [ORANGE, BLUE, PURPLE, '5A6478'][i] }, line: { type: 'none' } });
     txt(s, 3.1, hy, 2.9, 0.6, `head ${i + 1}: 65 × 32`, { color: C.background1, bold: true, align: 'center', valign: 'middle', fontSize: 14 });
-    s.addShape(pres.shapes.LINE, { x: 6.0, y: hy + 0.3, w: 0.7, h: y + 1.5 - (hy + 0.3), line: { color: 'C9CED8', width: 1.5 } });
+    connect(s, 6.0, hy + 0.3, 6.7, y + 1.5, { color: 'C9CED8', width: 1.5, endArrowType: 'triangle' });
   }
   step(3);
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 6.7, y: y + 0.9, w: 2.0, h: 1.2, rectRadius: 0.08, fill: { color: C.background2 }, line: { type: 'none' } });
@@ -397,7 +415,7 @@ Parameters per block: attention 66,048 + MLP 65,920 + 2 LayerNorms 512 = 132,480
     const y = 6.05 - i * 0.82;
     s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: bx, y, w: bw, h: 0.55, rectRadius: 0.08, fill: { color: it[1] }, line: it[1] === 'FFFFFF' ? { color: 'C9CED8', width: 1 } : { type: 'none' } });
     txt(s, bx, y, bw, 0.55, it[0], { align: 'center', valign: 'middle', bold: true, color: it[2], fontSize: 14 });
-    if (i < items.length - 1) s.addShape(pres.shapes.LINE, { x: bx + bw / 2, y: y, w: 0, h: -0.27, flipV: true, line: { color: '8D96A8', width: 1.25, endArrowType: 'triangle' } });
+    if (i < items.length - 1) connect(s, bx + bw / 2, y, bx + bw / 2, y - 0.27, { color: '8D96A8', width: 1.25, endArrowType: 'triangle' });
   });
   step(2);
   eq(s, 4.7, 1.5, 8.0, 1.2, 'z′ₗ = zₗ₋₁ + MSA( LN(zₗ₋₁) )\nzₗ = z′ₗ + MLP( LN(z′ₗ) )', 22);
@@ -450,7 +468,7 @@ Compute per image: about 2 x 65 x 8D^2 = 17 MFLOPs for the linear layers per blo
 // ======================================================================
 // PART 2: IMPLEMENTATION
 // ======================================================================
-sectionSlide(2, 'Part 2: Implementation', 'Writing it from scratch, verifying it, training it', 'Dilawar',
+sectionSlide(2, 'Part 2: Implementation', 'Writing it from scratch, verifying it, training it', 'Dilawar Shah',
   '[Dilawar] Now how we built it. Our rule was no nn.MultiheadAttention and no timm for our model. Every operation is written out, so we can explain and inspect every number.');
 {
   const s = content('Our code: about 120 lines of plain PyTorch',
@@ -578,7 +596,7 @@ Honest limitations: these are single runs with one seed on CPU, so differences u
 // ======================================================================
 // PART 3: RESULTS
 // ======================================================================
-sectionSlide(3, 'Part 3: Experiments', 'ViT vs CNN, ablations, data hunger, pre-training', 'Khizar',
+sectionSlide(3, 'Part 3: Experiments', 'ViT vs CNN, ablations, data hunger, pre-training', 'Syed Khizar Hussain Kazmi',
   '[Khizar] Now the results. Every number on these slides comes from our own runs.');
 {
   const vAcc = vm.final_test_acc, cAcc = cm.final_test_acc;
@@ -699,7 +717,7 @@ This is how ViTs are used in practice: almost nobody trains one from scratch on 
 // ======================================================================
 // PART 4: INSIDE THE MODEL
 // ======================================================================
-sectionSlide(4, 'Part 4: Inside the Model', 'What did our ViT actually learn?', 'Farhan',
+sectionSlide(4, 'Part 4: Inside the Model', 'What did our ViT actually learn?', 'Muhammad Farhan Khan',
   '[Farhan] Accuracy tells us how well the model works. Now we open it up and look at what it learned.');
 {
   const s = content('Where does the CLS token look? Attention rollout',
@@ -872,7 +890,8 @@ Q: Does the model really need positions? A: It needs them for spatial reasoning.
   s.addImage({ path: 'figs/patch_seq.png', x: 0.8, y: 0.9, w: 8.4, h: 0.62 });
   s.addText('Thank you: questions?', { placeholder: 'title' });
   s.addText([{ text: 'Code and notebook: ViT_from_scratch_CIFAR10.ipynb (runs on a free Colab T4)', options: { breakLine: true } },
-    { text: 'Ammar · Dilawar · Khizar · Farhan', options: { color: ORANGE, fontSize: 16 } }], { placeholder: 'body' });
+    { text: 'Implementation Explanation · Deep Learning', options: { color: ORANGE, fontSize: 16 } }], { placeholder: 'body' });
+  groupNames(s);
   s.addNotes('Thank you. We are happy to take questions. The notebook reproduces every number in this talk.');
 }
 
